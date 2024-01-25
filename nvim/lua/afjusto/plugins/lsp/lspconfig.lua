@@ -65,7 +65,7 @@ return {
 			keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
 
 			opts.desc = "Show Symbols"
-			keymap.set("n", "<leader>os", require("telescope.builtin").lsp_document_symbols, opts)
+			keymap.set("n", "<leader>fo", require("telescope.builtin").lsp_document_symbols, opts)
 		end
 
 		-- used to enable autocompletion (assign to every lsp server config)
