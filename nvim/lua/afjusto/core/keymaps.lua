@@ -1,28 +1,27 @@
 vim.g.mapleader = " "
 
-vim.keymap.set("i", "jk", "<ESC>", { desc = "Leave insert mode" })
-
 vim.keymap.set({ "n", "v" }, "L", "$", { desc = "Go to end of line" })
 vim.keymap.set({ "n", "v" }, "H", "^", { desc = "Go to end of line" })
 
 -- split management
-vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split horizontally" })
-vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split vertically" })
-vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make split windows equally " })
-vim.keymap.set("n", "<leader>sx", ":close<CR>", { desc = "Close split window" })
+vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split horizontally" })
+vim.keymap.set("n", "<leader>wh", "<C-w>s", { desc = "Split vertically" })
+vim.keymap.set("n", "<leader>we", "<C-w>=", { desc = "Make split windows equally " })
+vim.keymap.set("n", "<leader>wx", ":close<CR>", { desc = "Close split window" })
 
 -- buffer management
-vim.keymap.set("n", "<leader>bx", ":bdelete<CR>", { desc = "Close buffer" })
+vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", ":bprev<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<C-s>", ":w<CR>", { desc = "Save buffer" })
+vim.keymap.set("n", "<leader>ww", ":w<CR>", { desc = "Save buffer" })
+-- vim.keymap.set("i", "<leader>ww", "<ESC>:w<CR>", { desc = "Save buffer" })
 
 -- symbols outline
-vim.keymap.set("n", "<leader>oo", ":SymbolsOutline<CR>", { desc = "Toggle outline" })
+-- vim.keymap.set("n", "<leader>oo", ":SymbolsOutline<CR>", { desc = "Toggle outline" })
 
 -- tree explorer
 vim.keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
-vim.keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFileToggle<CR>", { desc = "Toggle file explorer on current file" })
+vim.keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "Toggle file explorer on current file" })
 vim.keymap.set("n", "<leader>ec", "<cmd>NvimTreeCollapse<CR>", { desc = "Collapse file explorer" })
 vim.keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" })
 
