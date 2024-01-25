@@ -20,7 +20,6 @@ vim.opt.incsearch = true
 -- appearance
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
-vim.opt.signcolumn = "number"
 vim.opt.scrolloff = 8
 
 -- backspace
@@ -39,3 +38,5 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 vim.opt.undofile = true
+
+vim.g.skip_ts_context_commentstring_module = true
