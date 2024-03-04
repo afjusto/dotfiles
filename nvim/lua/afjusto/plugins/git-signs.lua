@@ -15,16 +15,16 @@ return {
 				delay = 500,
 			},
 			on_attach = function(bufnr)
-				local gs = package.loaded.gitsigns
-
 				local function map(mode, l, r, opts)
 					opts = opts or {}
 					opts.buffer = bufnr
 					vim.keymap.set(mode, l, r, opts)
 				end
 
-				map("n", "]c", gs.next_hunk, { desc = "Next Git Hunk" })
-				map("n", "[c", gs.prev_hunk, { desc = "Prev Git Hunk" })
+				map("n", "<leader>gd", "<cmd>Gitsigns preview_hunk_inline<CR>", { buffer = bufnr })
+				map("n", "]g", "<cmd>Gitsigns next_hunk<CR>", { buffer = bufnr })
+				map("n", "[g", "<cmd>Gitsigns prev_hunk<CR>", { buffer = bufnr })
+				map("n", "<leader>xg", "<cmd>Gitsigns setqflist<CR>", { buffer = bufnr }) -- use trouble
 			end,
 		})
 	end,

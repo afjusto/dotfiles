@@ -35,7 +35,7 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines" })
 vim.keymap.set("n", "n", "nzzzv", { desc = "Center next search result" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Center previous search result" })
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete to black hole register" })
+vim.keymap.set({ "v" }, "<leader>d", [["_d]], { desc = "Delete to black hole register" })
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set(
 	"n",
