@@ -4,6 +4,7 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+		"nvim-telescope/telescope-ui-select.nvim",
 		"nvim-tree/nvim-web-devicons",
 	},
 	config = function()
@@ -26,16 +27,21 @@ return {
 			},
 		})
 
-		telescope.load_extension("fzf")
+		pcall(require("telescope").load_extension, "fzf")
+		pcall(require("telescope").load_extension, "ui-select")
 
 		local builtin = require("telescope.builtin")
 		local utils = require("telescope.utils")
 
+		vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Find help tags" })
+		vim.keymap.set("n", "<leader>fk", builtin.keymaps, { desc = "Find keymaps" })
+		vim.keymap.set("n", "<leader>fr", builtin.resume, { desc = "Resume previous search" })
+		vim.keymap.set("n", "<leader>gs", builtin.git_status, { desc = "List changes" })
 		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
 		vim.keymap.set("n", "<leader>fd", function()
 			builtin.find_files({ cwd = utils.buffer_dir() })
 		end, { desc = "Find files in current directory" })
-		vim.keymap.set("n", "<leader>fr", builtin.oldfiles, { desc = "Find recent files" })
+		vim.keymap.set("n", "<leader>.", builtin.oldfiles, { desc = "Find recent files" })
 		vim.keymap.set("n", "<leader>fs", builtin.live_grep, { desc = "Find string" })
 		-- vim.keymap.set("n", "<leader>fc", builtin.grep_string, { desc = "Find string under cursor" })
 		vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Find buffers" })
@@ -48,5 +54,12 @@ return {
 		vim.keymap.set({ "n", "x" }, "<leader>rr", function()
 			require("refactoring").select_refactor()
 		end)
+
+		vim.keymap.set("n", "<leader>/", function()
+			builtin.current_buffer_fuzzy_find({
+				layout_strategy = "vertical",
+				previewer = false,
+			})
+		end, { desc = "Search in current buffer" })
 	end,
 }
