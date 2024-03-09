@@ -14,7 +14,7 @@ vim.opt.wrap = false
 -- search settings
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.hlsearch = false
+vim.opt.hlsearch = true
 vim.opt.incsearch = true
 
 -- appearance
@@ -34,6 +34,10 @@ vim.opt.splitbelow = true
 
 vim.opt.iskeyword:append("-")
 
+vim.opt.mouse = "a"
+
+vim.opt.showmode = false -- don't show mode since it's already in the statusline
+
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
@@ -44,3 +48,14 @@ vim.g.skip_ts_context_commentstring_module = true
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldlevel = 99
+
+-- Decrease update time
+vim.opt.updatetime = 250
+vim.opt.timeoutlen = 300
+
+-- vim.opt.list = true
+-- vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+
+vim.opt.inccommand = "split"
+
+vim.opt.cursorline = true
