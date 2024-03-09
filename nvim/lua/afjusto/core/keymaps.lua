@@ -4,20 +4,16 @@ vim.keymap.set({ "n", "v" }, "L", "$", { desc = "Go to end of line" })
 vim.keymap.set({ "n", "v" }, "H", "^", { desc = "Go to end of line" })
 
 -- split management
-vim.keymap.set("n", "<leader>wv", "<C-w>v", { desc = "Split horizontally" })
-vim.keymap.set("n", "<leader>wh", "<C-w>s", { desc = "Split vertically" })
-vim.keymap.set("n", "<leader>we", "<C-w>=", { desc = "Make split windows equally " })
-vim.keymap.set("n", "<leader>wx", ":close<CR>", { desc = "Close split window" })
+vim.keymap.set("n", "<leader>Wv", "<C-w>v", { desc = "Split horizontally" })
+vim.keymap.set("n", "<leader>Wh", "<C-w>s", { desc = "Split vertically" })
+vim.keymap.set("n", "<leader>We", "<C-w>=", { desc = "Make split windows equally " })
+vim.keymap.set("n", "<leader>Wx", ":close<CR>", { desc = "Close split window" })
 
 -- buffer management
 vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", ":bprev<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<leader>ww", ":w<CR>", { desc = "Save buffer" })
--- vim.keymap.set("i", "<leader>ww", "<ESC>:w<CR>", { desc = "Save buffer" })
-
--- symbols outline
--- vim.keymap.set("n", "<leader>oo", ":SymbolsOutline<CR>", { desc = "Toggle outline" })
+vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save buffer" })
 
 -- tree explorer
 vim.keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
@@ -35,7 +31,7 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Scroll up" })
 vim.keymap.set("n", "J", "mzJ`z", { desc = "Join lines" })
 vim.keymap.set("n", "n", "nzzzv", { desc = "Center next search result" })
 vim.keymap.set("n", "N", "Nzzzv", { desc = "Center previous search result" })
-vim.keymap.set({ "v" }, "<leader>d", [["_d]], { desc = "Delete to black hole register" })
+vim.keymap.set({ "v" }, "<leader>D", [["_d]], { desc = "Delete to black hole register" })
 vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
 vim.keymap.set(
 	"n",
@@ -43,9 +39,8 @@ vim.keymap.set(
 	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
 	{ desc = "Replace word under cursor" }
 )
-vim.keymap.set({ "n", "x" }, "<leader>rr", function()
-	require("refactoring").select_refactor()
-end, { desc = "Refactor" })
 
 vim.keymap.set("n", "<leader>o", "o<ESC>", { desc = "Insert new line below" })
 vim.keymap.set("n", "<leader>O", "O<ESC>", { desc = "Insert new line above" })
+
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
