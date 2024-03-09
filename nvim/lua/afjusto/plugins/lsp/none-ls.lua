@@ -5,6 +5,7 @@ return {
 	dependencies = {
 		"jay-babu/mason-null-ls.nvim",
 		"jose-elias-alvarez/typescript.nvim",
+		"nvimtools/none-ls-extras.nvim",
 	},
 	config = function()
 		local mason_null_ls = require("mason-null-ls")
@@ -23,8 +24,6 @@ return {
 
 		-- for conciseness
 		local formatting = null_ls.builtins.formatting -- to setup formatters
-		local diagnostics = null_ls.builtins.diagnostics -- to setup linters
-		local code_actions = null_ls.builtins.code_actions -- to setup code actions
 
 		-- to setup format on save
 		local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
@@ -37,12 +36,12 @@ return {
 			sources = {
 				--  to disable file types use
 				--  "formatting.prettier.with({disabled_filetypes: {}})" (see null-ls docs)
-				formatting.prettier.with({
+				formatting.prettierd.with({
 					extra_filetypes = { "svelte" },
 				}), -- js/ts formatter
 				formatting.stylua, -- lua formatter
-				diagnostics.eslint_d,
-				code_actions.eslint_d,
+				require("none-ls.code_actions.eslint_d"),
+				require("none-ls.diagnostics.eslint_d"),
 				require("typescript.extensions.null-ls.code-actions"),
 			},
 			-- configure format on save
