@@ -10,16 +10,16 @@ return {
 	},
 	keys = {
 		{
-			"<leader>s",
-			mode = { "n", "x", "o" },
+			"s",
+			mode = { "n" },
 			function()
 				require("flash").jump()
 			end,
 			desc = "Flash",
 		},
 		{
-			"<leader>t",
-			mode = { "n", "x", "o" },
+			"S",
+			mode = { "n" },
 			function()
 				require("flash").treesitter()
 			end,
