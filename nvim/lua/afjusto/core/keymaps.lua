@@ -44,3 +44,6 @@ vim.keymap.set("n", "<leader>o", "o<ESC>", { desc = "Insert new line below" })
 vim.keymap.set("n", "<leader>O", "O<ESC>", { desc = "Insert new line above" })
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
+vim.keymap.set("n", "yp", "<cmd>let @+ = expand('%:~:.')<cr>", { desc = "Copy relative path" })
+vim.keymap.set("n", "yP", "<cmd>let @+ = expand('%:p')<cr>", { desc = "Copy absolute path" })
