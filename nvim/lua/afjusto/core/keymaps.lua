@@ -1,13 +1,60 @@
+-- Initialize a table to store information about the last closed window
+local last_closed_window = {}
+
+-- Function to save the last closed window's info
+local function save_last_closed_window()
+	local current_win = vim.api.nvim_get_current_win()
+	local win_info = vim.fn.getwininfo(current_win)[1]
+
+	-- Save window info if it's not the only window
+	if #vim.api.nvim_tabpage_list_wins(0) > 1 then
+		last_closed_window = {
+			buf = vim.api.nvim_win_get_buf(current_win),
+			is_vertical = win_info.wincol > 0,
+		}
+	else
+		last_closed_window = {}
+	end
+end
+
+-- Function to reopen the last closed window
+function _G.reopen_last_closed_window()
+	if next(last_closed_window) ~= nil then
+		local buf = last_closed_window.buf
+		local is_vertical = last_closed_window.is_vertical
+
+		if is_vertical then
+			vim.api.nvim_command("vsplit")
+		else
+			vim.api.nvim_command("split")
+		end
+
+		local new_win = vim.api.nvim_get_current_win()
+		vim.api.nvim_win_set_buf(new_win, buf)
+		last_closed_window = {} -- Reset after reopening
+	else
+		print("No recently closed window to reopen.")
+	end
+end
+
+-- Autocommand to save the last closed window info
+vim.api.nvim_create_autocmd("WinClosed", {
+	callback = function()
+		save_last_closed_window()
+	end,
+})
+
 vim.g.mapleader = " "
 
 vim.keymap.set({ "n", "v" }, "L", "$", { desc = "Go to end of line" })
 vim.keymap.set({ "n", "v" }, "H", "^", { desc = "Go to end of line" })
 
 -- split management
-vim.keymap.set("n", "<leader>Wv", "<C-w>v", { desc = "Split horizontally" })
-vim.keymap.set("n", "<leader>Wh", "<C-w>s", { desc = "Split vertically" })
-vim.keymap.set("n", "<leader>We", "<C-w>=", { desc = "Make split windows equally " })
-vim.keymap.set("n", "<leader>Wx", ":close<CR>", { desc = "Close split window" })
+vim.keymap.set("n", "<leader>ws", "<C-w>v", { desc = "Split horizontally" })
+vim.keymap.set("n", "<leader>wh", "<C-w>s", { desc = "Split vertically" })
+vim.keymap.set("n", "<leader>we", "<C-w>=", { desc = "Make split windows equally " })
+vim.keymap.set("n", "<leader>wq", ":close<CR>", { desc = "Close split window" })
+vim.keymap.set("n", "<leader>wr", ":lua reopen_last_closed_window()<CR>", { noremap = true, silent = true })
 
 -- buffer management
 vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
