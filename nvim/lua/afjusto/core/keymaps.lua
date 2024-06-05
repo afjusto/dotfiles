@@ -60,7 +60,7 @@ vim.keymap.set("n", "<leader>wr", ":lua reopen_last_closed_window()<CR>", { nore
 vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", ":bprev<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save buffer" })
+vim.keymap.set("n", "<leader>s", ":w<CR>", { desc = "Save buffer" })
 
 -- tree explorer
 vim.keymap.set("n", "<leader>ee", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
