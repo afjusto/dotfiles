@@ -57,7 +57,7 @@ vim.keymap.set("n", "<leader>wq", ":close<CR>", { desc = "Close split window" })
 vim.keymap.set("n", "<leader>wr", ":lua reopen_last_closed_window()<CR>", { noremap = true, silent = true })
 
 -- buffer management
-vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
+-- vim.keymap.set("n", "<leader>q", ":bdelete<CR>", { desc = "Close buffer" })
 vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bp", ":bprev<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "<leader>s", ":w<CR>", { desc = "Save buffer" })
