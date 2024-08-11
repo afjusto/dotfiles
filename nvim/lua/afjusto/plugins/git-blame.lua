@@ -2,7 +2,7 @@ return {
 	"f-person/git-blame.nvim",
 	config = function()
 		require("gitsigns").setup({
-			enabled = false,
+			-- enabled = false,
 		})
 
 		vim.keymap.set(

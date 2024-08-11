@@ -16,7 +16,15 @@ return {
 
 		local keymap = vim.keymap -- for conciseness
 
-		local opts = { noremap = true, silent = true }
+		local opts = {
+			noremap = true,
+			silent = true,
+			-- servers = {
+			-- 	ruby_ls = {
+			-- 		mason = true,
+			-- 	},
+			-- },
+		}
 		local on_attach = function(client, bufnr)
 			opts.buffer = bufnr
 
@@ -83,6 +91,23 @@ return {
 		lspconfig["html"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
+		})
+
+		-- lspconfig["ruby_ls"].setup({
+		-- 	capabilities = capabilities,
+		-- 	on_attach = on_attach,
+		-- })
+
+		lspconfig["solargraph"].setup({
+			capabilities = capabilities,
+			on_attach = on_attach,
+			settings = {
+				solargraph = {
+					diagnostics = false, -- Disable linting
+					max_files = 0,
+				},
+				max_files = 0,
+			},
 		})
 
 		-- configure typescript server with plugin

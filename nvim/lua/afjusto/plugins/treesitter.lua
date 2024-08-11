@@ -40,6 +40,7 @@ return {
 					"vim",
 					"dockerfile",
 					"gitignore",
+					"ruby",
 				},
 				incremental_selection = {
 					enable = true,

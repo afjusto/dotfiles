@@ -57,3 +57,5 @@ vim.opt.timeoutlen = 300
 vim.opt.inccommand = "split"
 
 vim.opt.cursorline = true
+
+vim.o.smartindent = true

@@ -1,0 +1,21 @@
+return {
+	"petertriho/nvim-scrollbar",
+	event = "BufReadPre",
+	config = function()
+		local colors = require("tokyonight.colors").setup()
+
+		require("scrollbar").setup({
+			handle = {
+				color = colors.bg_highlight,
+			},
+			marks = {
+				Search = { color = "#f5a97f" },
+				Error = { color = "#ed8796" },
+				-- Warn = { color = colors.warning },
+				-- Info = { color = colors.info },
+				-- Hint = { color = colors.hint },
+				-- Misc = { color = colors.purple },
+			},
+		})
+	end,
+}
