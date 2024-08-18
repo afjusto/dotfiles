@@ -6,35 +6,39 @@ return {
   {
     'lewis6991/gitsigns.nvim',
     opts = {
-      on_attach = function(bufnr)
-        local gitsigns = require 'gitsigns'
+      on_attach = function(buffer)
+        local gs = require 'gitsigns'
 
-        local function map(mode, l, r, opts)
-          opts = opts or {}
-          opts.buffer = bufnr
-          vim.keymap.set(mode, l, r, opts)
+        local function map(mode, l, r, desc)
+          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
         end
 
         -- Navigation
         map('n', ']g', function()
           if vim.wo.diff then
-            vim.cmd.normal { ']g', bang = true }
+            vim.cmd.normal { ']c', bang = true }
           else
-            gitsigns.nav_hunk 'next'
+            gs.nav_hunk 'next'
           end
-        end, { desc = 'Jump to next git change' })
+        end, 'Next Hunk')
 
         map('n', '[g', function()
           if vim.wo.diff then
-            vim.cmd.normal { '[g', bang = true }
+            vim.cmd.normal { '[c', bang = true }
           else
-            gitsigns.nav_hunk 'prev'
+            gs.nav_hunk 'prev'
           end
-        end, { desc = 'Jump to previous git change' })
+        end, 'Prev Hunk')
+
+        map('n', ']G', function()
+          gs.nav_hunk 'last'
+        end, 'Last Hunk')
+        map('n', '[G', function()
+          gs.nav_hunk 'first'
+        end, 'First Hunk')
 
         -- Actions
-        -- normal mode
-        map('n', '<leader>gd', '<cmd>Gitsigns preview_hunk_inline<CR>', { buffer = bufnr, desc = 'Preview hunk inline' })
+        map('n', '<leader>gd', gs.preview_hunk_inline, 'Preview Hunk Inline')
       end,
     },
   },
