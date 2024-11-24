@@ -53,4 +53,6 @@ config.mouse_bindings = {
 	},
 }
 
+config.max_fps = 120
+
 return config
