@@ -46,6 +46,8 @@ return {
         map('n', '<leader>gb', function()
           gs.blame_line { full = true }
         end, 'Show blame')
+
+        map('n', '<leader>gB', ':G blame<CR>', 'Show blame for all lines')
       end,
     },
   },

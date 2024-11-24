@@ -254,6 +254,8 @@ require('lazy').setup({
   'tpope/vim-fugitive',
   'christoomey/vim-tmux-navigator',
 
+  { 'akinsho/git-conflict.nvim', version = '*', config = true },
+
   {
     'folke/tokyonight.nvim',
     priority = 1000,
