@@ -9,7 +9,7 @@ config.set_environment_variables = {
 config.color_scheme = "Tokyo Night Storm"
 
 config.font = wezterm.font("FiraCode Nerd Font Mono", { weight = "Medium" })
-config.font_size = 14.0
+config.font_size = 15.0
 
 config.enable_tab_bar = false
 config.window_decorations = "RESIZE"
@@ -53,6 +53,6 @@ config.mouse_bindings = {
 	},
 }
 
-config.max_fps = 120
+config.max_fps = 240
 
 return config
