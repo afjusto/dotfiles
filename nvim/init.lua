@@ -497,6 +497,18 @@ require('lazy').setup({
     end,
   },
 
+  {
+    'mistricky/codesnap.nvim',
+    opts = {
+      mac_window_bar = false,
+      save_path = '~/Desktop/',
+      has_breadcrumbs = true,
+      has_line_number = true,
+      bg_padding = 0,
+      watermark = '',
+    },
+  },
+
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   require 'kickstart.plugins.autopairs',
