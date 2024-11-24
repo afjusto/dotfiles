@@ -38,7 +38,14 @@ return {
         end, 'First Hunk')
 
         -- Actions
-        map('n', '<leader>gd', gs.preview_hunk_inline, 'Preview Hunk Inline')
+        map({ 'n', 'v' }, '<leader>gp', gs.preview_hunk, 'Preview Hunk Inline')
+        map({ 'n', 'v' }, '<leader>ga', ':Gitsigns stage_hunk<CR>', 'Stage hunk')
+        map({ 'n', 'v' }, '<leader>gA', ':Gitsigns stage_buffer<CR>', 'Stage buffer')
+        map({ 'n', 'v' }, '<leader>gr', ':Gitsigns reset_hunk<CR>', 'Reset hunk')
+        map({ 'n', 'v' }, '<leader>gR', ':Gitsigns reset_buffer<CR>', 'Reset buffer')
+        map('n', '<leader>gb', function()
+          gs.blame_line { full = true }
+        end, 'Show blame')
       end,
     },
   },

@@ -100,7 +100,6 @@ end, { noremap = true, silent = true, desc = 'Restore last closed window' })
 -- buffer management
 vim.keymap.set('n', '[b', ':bprev<CR>', { desc = 'Previous buffer' })
 vim.keymap.set('n', ']b', ':bnext<CR>', { desc = 'Next buffer' })
-vim.keymap.set('n', '<leader>s', ':w<CR>', { desc = 'Save buffer' })
 vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
 -- quickfix
