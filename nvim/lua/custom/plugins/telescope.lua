@@ -39,9 +39,53 @@ return { -- Fuzzy Finder (files, lsp, etc)
 
     telescope.setup {
       defaults = {
+        layout_config = {
+          horizontal = {
+            width = 0.98,
+            height = 0.98,
+            preview_width = 0.55,
+          },
+        },
+        layout_strategy = 'horizontal',
+        -- path_display = function(_, path)
+        --   local tail = require('telescope.utils').path_tail(path)
+        --   return string.format('%s (%s)', tail, path), { { { 1, #tail }, 'Constant' } }
+        -- end,
         path_display = function(_, path)
           local tail = require('telescope.utils').path_tail(path)
-          return string.format('%s (%s)', tail, path), { { { 1, #tail }, 'Constant' } }
+
+          -- Split the path into parts
+          local parts = {}
+          for part in string.gmatch(path, '[^/]+') do
+            table.insert(parts, part)
+          end
+
+          -- Get the last n directories (e.g., 2) without the filename
+          local n = 2 -- Change this number to show more/fewer directory levels
+
+          -- Add the last n directories (excluding filename)
+          local start_idx = #parts - n - 1 -- -1 because we don't want the filename
+          if start_idx < 1 then
+            start_idx = 1
+          end
+
+          -- Build the shortened path (excluding filename)
+          local shortened_path = ''
+          if start_idx > 1 then
+            shortened_path = '.../'
+          end
+
+          -- Only go up to #parts - 1 to exclude the filename
+          for i = start_idx, #parts - 1 do
+            shortened_path = shortened_path .. parts[i] .. '/'
+          end
+
+          -- Remove trailing slash
+          if shortened_path:sub(-1) == '/' then
+            shortened_path = shortened_path:sub(1, -2)
+          end
+
+          return string.format('%s (%s)', tail, shortened_path), { { { 1, #tail }, 'Constant' } }
         end,
         mappings = {
           i = {
