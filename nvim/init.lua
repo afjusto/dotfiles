@@ -299,7 +299,12 @@ require('lazy').setup({
   {
     'lukas-reineke/indent-blankline.nvim',
     main = 'ibl',
-    opts = {},
+    opts = {
+      enabled = false,
+    },
+    config = function()
+      vim.keymap.set('n', '<leader>ui', '<cmd>IBLToggle<CR>', { desc = 'Toggle indent lines' })
+    end,
   },
 
   {
