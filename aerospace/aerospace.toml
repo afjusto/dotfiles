@@ -165,10 +165,10 @@ backspace = ['close-all-windows-but-current', 'mode main']
 
 [mode.apps.binding]
 esc = ['reload-config', 'mode main']
-b = ['exec-and-forget open -a /Applications/Google\ Chrome.app/']
+b = ['exec-and-forget open -a /Applications/Google\ Chrome.app/', 'mode main']
 c = ['exec-and-forget open -a /Applications/WezTerm.app/', 'mode main']
 f = ['exec-and-forget open -a /Applications/Figma.app/', 'mode main']
-s = ['exec-and-forget open -a /Applications/Slack.app/']
+s = ['exec-and-forget open -a /Applications/Slack.app/', 'mode main']
 q = ['exec-and-forget open -a /System/Applications/QuickTime\ Player.app', 'mode main']
 alt-s = ['exec-and-forget open -a /Applications/Spotify.app/', 'mode main']
 
