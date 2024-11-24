@@ -2,6 +2,9 @@ return {
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects',
+    },
     opts = {
       ensure_installed = {
         'bash',
@@ -40,6 +43,24 @@ return {
           node_incremental = '<C-space>',
           scope_incremental = false,
           node_decremental = '<bs>',
+        },
+      },
+      textobjects = {
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            [']f'] = '@function.outer',
+          },
+          goto_next_end = {
+            [']F'] = '@function.outer',
+          },
+          goto_previous_start = {
+            ['[f'] = '@function.outer',
+          },
+          goto_previous_end = {
+            ['[F'] = '@function.outer',
+          },
         },
       },
     },
