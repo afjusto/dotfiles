@@ -254,6 +254,17 @@ require('lazy').setup({
   'tpope/vim-fugitive',
   'christoomey/vim-tmux-navigator',
 
+  {
+    'RRethy/nvim-treesitter-endwise',
+    config = function()
+      require('nvim-treesitter.configs').setup {
+        endwise = {
+          enable = true,
+        },
+      }
+    end,
+  },
+
   { 'akinsho/git-conflict.nvim', version = '*', config = true },
 
   {
