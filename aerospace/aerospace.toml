@@ -127,7 +127,7 @@ alt-b = 'workspace B' # browser
 alt-c = 'workspace C' # terminal + code
 alt-f = 'workspace F' # figma
 alt-s = 'workspace S' # slack
-alt-t = 'workspace C' # terminal
+alt-t = 'workspace T' # Linear
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
@@ -169,6 +169,7 @@ b = ['exec-and-forget open -a /Applications/Google\ Chrome.app/', 'mode main']
 c = ['exec-and-forget open -a /Applications/WezTerm.app/', 'mode main']
 f = ['exec-and-forget open -a /Applications/Figma.app/', 'mode main']
 s = ['exec-and-forget open -a /Applications/Slack.app/', 'mode main']
+t = ['exec-and-forget open -a /Applications/Linear.app/', 'mode main']
 q = ['exec-and-forget open -a /System/Applications/QuickTime\ Player.app', 'mode main']
 alt-s = ['exec-and-forget open -a /Applications/Spotify.app/', 'mode main']
 
@@ -191,6 +192,10 @@ run = "move-node-to-workspace F"
 [[on-window-detected]]
 if.app-id = 'com.google.Chrome'
 run = "move-node-to-workspace B"
+
+[[on-window-detected]]
+if.app-id = 'com.linear'
+run = "move-node-to-workspace T"
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
