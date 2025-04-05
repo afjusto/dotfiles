@@ -9,7 +9,7 @@ config.set_environment_variables = {
 config.color_scheme = "Tokyo Night Storm"
 
 config.font = wezterm.font("FiraCode Nerd Font Mono", { weight = "Medium" })
-config.font_size = 15.0
+config.font_size = 13.0
 
 config.enable_tab_bar = false
 config.window_decorations = "RESIZE"
@@ -40,9 +40,10 @@ config.keys = {
 		mods = "SUPER",
 		action = wezterm.action.SpawnCommandInNewTab({
 			cwd = wezterm.home_dir,
-			args = { "nvim", wezterm.config_file },
+			args = { os.getenv("HOME") .. "/Applications/nvim/bin/nvim", wezterm.config_file },
 		}),
 	},
+	{ key = "S", mods = "CTRL|SHIFT", action = wezterm.action.QuickSelect },
 }
 
 config.mouse_bindings = {
