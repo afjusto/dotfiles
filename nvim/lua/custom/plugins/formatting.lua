@@ -28,7 +28,6 @@ return {
     end,
     formatters_by_ft = {
       lua = { 'stylua' },
-      ruby = { 'standardrb' },
       javascript = { 'prettier' },
       typescript = { 'prettier' },
       javascriptreact = { 'prettier' },

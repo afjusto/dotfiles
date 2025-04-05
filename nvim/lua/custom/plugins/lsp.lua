@@ -148,21 +148,6 @@ return {
       html = {},
       tailwindcss = {},
 
-      -- Ruby servers
-      ruby_lsp = {
-        enabled = false,
-      },
-      solargraph = {
-        enabled = false,
-        settings = {
-          solargraph = {
-            diagnostics = false,
-            max_files = 0,
-          },
-          max_files = 0,
-        },
-      },
-
       -- TS and JS servers
       tsserver = {
         enabled = false,
