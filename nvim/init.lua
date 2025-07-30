@@ -75,6 +75,11 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
 vim.opt.foldlevel = 99
 
+vim.diagnostic.config {
+  -- virtual_lines = true,
+  virtual_text = true,
+}
+
 -- [[ Keymaps ]]
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'Q', '<nop>', { silent = true })
@@ -102,10 +107,6 @@ vim.keymap.set('n', '[b', ':bprev<CR>', { desc = 'Previous buffer' })
 vim.keymap.set('n', ']b', ':bnext<CR>', { desc = 'Next buffer' })
 vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
--- quickfix
-vim.keymap.set('n', '[q', vim.cmd.cprev, { desc = 'Previous Quickfix' })
-vim.keymap.set('n', ']q', vim.cmd.cnext, { desc = 'Next Quickfix' })
-
 -- commenting
 vim.keymap.set('n', 'gco', 'o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Below' })
 vim.keymap.set('n', 'gcO', 'O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Above' })
@@ -120,6 +121,16 @@ vim.keymap.set('n', '<leader>er', '<cmd>NvimTreeRefresh<CR>', { desc = 'Refresh 
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
+vim.keymap.set({ 'n', 'v' }, '<leader>ac', ':CopilotChatOpen<cr>', { desc = 'Open Copilot Chat', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>aq', ':CopilotChatClose<cr>', { desc = 'Close Copilot Chat', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>as', ':CopilotChatStop<cr>', { desc = 'Stop Copilot Chat', silent = true })
+
+vim.keymap.set({ 'n', 'v' }, '<leader>af', ':CopilotChatFix<cr>', { desc = 'Copilot Chat - Fix', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>ae', ':CopilotChatExplain<cr>', { desc = 'Copilot Chat - Explain', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>ar', ':CopilotChatReview<cr>', { desc = 'Copilot Chat - Review', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>ao', ':CopilotChatOptimize<cr>', { desc = 'Copilot Chat - Optimize', silent = true })
+vim.keymap.set({ 'n', 'v' }, '<leader>at', ':CopilotChatTests<cr>', { desc = 'Copilot Chat - Generate tests', silent = true })
+
 -- diagnostics
 local diagnostic_goto = function(next, severity)
   local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
@@ -130,8 +141,6 @@ local diagnostic_goto = function(next, severity)
 end
 
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
-vim.keymap.set('n', ']d', diagnostic_goto(true), { desc = 'Next Diagnostic' })
-vim.keymap.set('n', '[d', diagnostic_goto(false), { desc = 'Prev Diagnostic' })
 vim.keymap.set('n', ']e', diagnostic_goto(true, 'ERROR'), { desc = 'Next Error' })
 vim.keymap.set('n', '[e', diagnostic_goto(false, 'ERROR'), { desc = 'Prev Error' })
 vim.keymap.set('n', ']w', diagnostic_goto(true, 'WARN'), { desc = 'Next Warning' })
@@ -232,6 +241,23 @@ vim.api.nvim_create_autocmd('User', {
 vim.api.nvim_create_autocmd('BufLeave', {
   callback = function()
     vim.cmd 'DoMatchParen'
+  end,
+})
+
+-- Shift numbered registers up (1 becomes 2, etc.)
+local function yank_shift()
+  for i = 9, 1, -1 do
+    vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i - 1)))
+  end
+end
+
+-- Create autocmd for TextYankPost event
+vim.api.nvim_create_autocmd('TextYankPost', {
+  callback = function()
+    local event = vim.v.event
+    if event.operator == 'y' then
+      yank_shift()
+    end
   end,
 })
 
@@ -519,6 +545,7 @@ require('lazy').setup({
 
   {
     'mistricky/codesnap.nvim',
+    build = 'make',
     opts = {
       mac_window_bar = false,
       save_path = '~/Desktop/',
@@ -540,6 +567,44 @@ require('lazy').setup({
     opts = {
       -- configurations go here
     },
+  },
+
+  {
+    'CopilotC-Nvim/CopilotChat.nvim',
+    dependencies = {
+      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
+      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
+    },
+    build = 'make tiktoken', -- Only on MacOS or Linux
+    opts = {
+      -- model = 'claude-3.7-sonnet',
+      -- See Configuration section for options
+    },
+  },
+
+  {
+    'johmsalas/text-case.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim' },
+    config = function()
+      require('textcase').setup {}
+      require('telescope').load_extension 'textcase'
+    end,
+    keys = {
+      'ga', -- Default invocation prefix
+      { 'ga.', '<cmd>TextCaseOpenTelescope<CR>', mode = { 'n', 'x' }, desc = 'Telescope' },
+    },
+    cmd = {
+      -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
+      'Subs',
+      'TextCaseOpenTelescope',
+      'TextCaseOpenTelescopeQuickChange',
+      'TextCaseOpenTelescopeLSPChange',
+      'TextCaseStartReplacingCommand',
+    },
+    -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
+    -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
+    -- available after the first executing of it or after a keymap of text-case.nvim has been used.
+    lazy = false,
   },
 
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).

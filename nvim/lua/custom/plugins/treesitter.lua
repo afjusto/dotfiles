@@ -65,26 +65,4 @@ return {
       -- Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     end,
   },
-
-  {
-    'nvim-treesitter/nvim-treesitter-context',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = function()
-      require('treesitter-context').setup {
-        max_lines = 5,
-      }
-
-      local context_enabled = true
-
-      vim.keymap.set('n', '<leader>ut', function()
-        local tsc = require 'treesitter-context'
-        if context_enabled then
-          tsc.disable()
-        else
-          tsc.enable()
-        end
-        context_enabled = not context_enabled
-      end, { desc = 'Toggle Treesitter Context' })
-    end,
-  },
 }

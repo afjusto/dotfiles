@@ -4,6 +4,10 @@ return {
   dependencies = {
     -- Snippet Engine & its associated nvim-cmp source
     {
+      'jdrupal-dev/css-vars.nvim',
+      opts = {},
+    },
+    {
       'L3MON4D3/LuaSnip',
       build = (function()
         -- Build Step is needed for regex support in snippets.
@@ -104,6 +108,7 @@ return {
           group_index = 0,
         },
         { name = 'nvim_lsp' },
+        { name = 'css_vars' },
         { name = 'luasnip' },
         { name = 'buffer' },
         { name = 'path' },
