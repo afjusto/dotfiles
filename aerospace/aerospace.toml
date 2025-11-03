@@ -126,6 +126,7 @@ alt-9 = 'workspace 9'
 alt-b = 'workspace B' # browser
 alt-c = 'workspace C' # terminal + code
 alt-f = 'workspace F' # figma
+alt-g = 'workspace G' # chatgpt
 alt-s = 'workspace S' # slack
 alt-t = 'workspace T' # Linear
 
@@ -141,8 +142,9 @@ alt-shift-8 = 'move-node-to-workspace 8'
 alt-shift-9 = 'move-node-to-workspace 9'
 alt-shift-b = 'move-node-to-workspace B'
 alt-shift-c = 'move-node-to-workspace C'
+alt-shift-g = 'move-node-to-workspace G'
 alt-shift-s = 'move-node-to-workspace S'
-alt-shift-t = 'move-node-to-workspace C'
+alt-shift-t = 'move-node-to-workspace T'
 
 alt-shift-f = 'fullscreen'
 
@@ -168,6 +170,7 @@ esc = ['reload-config', 'mode main']
 b = ['exec-and-forget open -a /Applications/Google\ Chrome.app/', 'mode main']
 c = ['exec-and-forget open -a /Applications/WezTerm.app/', 'mode main']
 f = ['exec-and-forget open -a /Applications/Figma.app/', 'mode main']
+g = ['exec-and-forget open -a /Applications/ChatGPT.app/', 'mode main']
 s = ['exec-and-forget open -a /Applications/Slack.app/', 'mode main']
 t = ['exec-and-forget open -a /Applications/Linear.app/', 'mode main']
 q = ['exec-and-forget open -a /System/Applications/QuickTime\ Player.app', 'mode main']
@@ -200,6 +203,10 @@ run = "move-node-to-workspace T"
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
 run = "move-node-to-workspace S"
+
+[[on-window-detected]]
+if.app-id = 'com.openai.chat'
+run = "move-node-to-workspace G"
 
 [[on-window-detected]]
 if.app-id = 'com.apple.finder'
