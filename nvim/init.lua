@@ -102,34 +102,15 @@ vim.keymap.set('n', '<leader>wr', function()
   utils.reopen_last_closed_window()
 end, { noremap = true, silent = true, desc = 'Restore last closed window' })
 
--- buffer management
-vim.keymap.set('n', '[b', ':bprev<CR>', { desc = 'Previous buffer' })
-vim.keymap.set('n', ']b', ':bnext<CR>', { desc = 'Next buffer' })
 vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
 -- commenting
 vim.keymap.set('n', 'gco', 'o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Below' })
 vim.keymap.set('n', 'gcO', 'O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Above' })
 
--- tree explorer
-vim.keymap.set('n', '<leader>ee', '<cmd>NvimTreeToggle<CR>', { desc = 'Toggle file explorer' })
-vim.keymap.set('n', '<leader>ef', '<cmd>NvimTreeFindFile<CR>', { desc = 'Toggle file explorer on current file' })
-vim.keymap.set('n', '<leader>ec', '<cmd>NvimTreeCollapse<CR>', { desc = 'Collapse file explorer' })
-vim.keymap.set('n', '<leader>er', '<cmd>NvimTreeRefresh<CR>', { desc = 'Refresh file explorer' })
-
 -- better indenting
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
-
-vim.keymap.set({ 'n', 'v' }, '<leader>ac', ':CopilotChatOpen<cr>', { desc = 'Open Copilot Chat', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>aq', ':CopilotChatClose<cr>', { desc = 'Close Copilot Chat', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>as', ':CopilotChatStop<cr>', { desc = 'Stop Copilot Chat', silent = true })
-
-vim.keymap.set({ 'n', 'v' }, '<leader>af', ':CopilotChatFix<cr>', { desc = 'Copilot Chat - Fix', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>ae', ':CopilotChatExplain<cr>', { desc = 'Copilot Chat - Explain', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>ar', ':CopilotChatReview<cr>', { desc = 'Copilot Chat - Review', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>ao', ':CopilotChatOptimize<cr>', { desc = 'Copilot Chat - Optimize', silent = true })
-vim.keymap.set({ 'n', 'v' }, '<leader>at', ':CopilotChatTests<cr>', { desc = 'Copilot Chat - Generate tests', silent = true })
 
 -- diagnostics
 local diagnostic_goto = function(next, severity)
@@ -570,19 +551,6 @@ require('lazy').setup({
   },
 
   {
-    'CopilotC-Nvim/CopilotChat.nvim',
-    dependencies = {
-      { 'github/copilot.vim' }, -- or zbirenbaum/copilot.lua
-      { 'nvim-lua/plenary.nvim', branch = 'master' }, -- for curl, log and async functions
-    },
-    build = 'make tiktoken', -- Only on MacOS or Linux
-    opts = {
-      -- model = 'claude-3.7-sonnet',
-      -- See Configuration section for options
-    },
-  },
-
-  {
     'johmsalas/text-case.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim' },
     config = function()
@@ -611,7 +579,6 @@ require('lazy').setup({
   --
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.gitsigns',
-  -- require 'kickstart.plugins.debug',
 
   { import = 'custom.plugins' },
 }, {
