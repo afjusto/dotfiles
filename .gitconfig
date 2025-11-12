@@ -1,0 +1,29 @@
+[user]
+	name = André Justo
+	email =
+[core]
+	excludesfile = /Users/andre.justo/.gitignore_global
+	editor = nvim
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path =
+[mergetool "sourcetree"]
+	cmd = /Users/andre.justo/Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/andre.justo/.stCommitMsg
+[alias]
+	co = checkout
+	st = status
+	br = branch
+	ci = commit
+[pull]
+	rebase = false
+[init]
+	defaultBranch = main
+[rerere]
+  enabled = true
+[diff]
+  algorithm = histogram
+[branch]
+  sort = -committerdate
