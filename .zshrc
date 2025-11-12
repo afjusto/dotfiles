@@ -35,6 +35,7 @@ export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
 alias vim="nvim"
 alias v="nvim"
 alias ls="eza --icons=always"
+alias gcb="git branch --show-current | pbcopy"
 
 # zoxide
 eval "$(zoxide init zsh)"
