@@ -146,6 +146,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', 'yp', "<cmd>let @+ = expand('%:~:.')<cr>", { desc = 'Copy relative path' })
 vim.keymap.set('n', 'yP', "<cmd>let @+ = expand('%:p')<cr>", { desc = 'Copy absolute path' })
 
+-- add keymap to toggle git blame
+vim.keymap.set('n', '<leader>ugb', '<cmd>GitBlameToggle<cr>', { desc = 'Toggle Git Blame' })
+
 -- [[ Autocommands ]]
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
@@ -338,7 +341,7 @@ require('lazy').setup({
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
       },
-      current_line_blame = true,
+      -- current_line_blame = true,
     },
   },
 
