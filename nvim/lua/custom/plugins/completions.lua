@@ -41,8 +41,9 @@ return {
   },
   opts = {
     performance = {
-      debounce = 0,
-      throttle = 0,
+      debounce = 60,
+      throttle = 30,
+      fetching_timeout = 500,
     },
   },
   config = function()
@@ -77,7 +78,7 @@ return {
           return item
         end,
       },
-      completion = { completeopt = 'menu,menuone,preview,noselect' },
+      completion = { completeopt = 'menu,menuone,noselect' },
       mapping = cmp.mapping.preset.insert {
         ['<C-k>'] = cmp.mapping.select_prev_item(),
         ['<C-j>'] = cmp.mapping.select_next_item(),
@@ -107,7 +108,7 @@ return {
           -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
           group_index = 0,
         },
-        { name = 'nvim_lsp' },
+        { name = 'nvim_lsp', keyword_length = 0 },
         { name = 'css_vars' },
         { name = 'luasnip' },
         { name = 'buffer' },
