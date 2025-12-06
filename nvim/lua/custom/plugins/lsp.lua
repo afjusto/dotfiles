@@ -15,13 +15,6 @@ return {
           vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
         end
 
-        map('gr', require('telescope.builtin').lsp_references, 'Goto References')
-        map('gD', vim.lsp.buf.declaration, 'Goto Declaration')
-        map('gd', require('telescope.builtin').lsp_definitions, 'Goto Definition')
-        map('gI', require('telescope.builtin').lsp_implementations, 'Goto Implementation')
-        map('gt', require('telescope.builtin').lsp_type_definitions, 'Type Definition')
-        map('<leader>fo', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
-        map('<leader>fO', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
         map('<leader>rn', vim.lsp.buf.rename, 'Rename')
         map('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
 

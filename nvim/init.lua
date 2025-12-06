@@ -214,20 +214,6 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
-vim.api.nvim_create_autocmd('User', {
-  pattern = 'TelescopePreviewerLoaded',
-  callback = function()
-    vim.cmd 'NoMatchParen'
-  end,
-})
-
--- Re-enable matchparen when leaving the buffer
-vim.api.nvim_create_autocmd('BufLeave', {
-  callback = function()
-    vim.cmd 'DoMatchParen'
-  end,
-})
-
 -- Shift numbered registers up (1 becomes 2, etc.)
 local function yank_shift()
   for i = 9, 1, -1 do
@@ -556,21 +542,15 @@ require('lazy').setup({
 
   {
     'johmsalas/text-case.nvim',
-    dependencies = { 'nvim-telescope/telescope.nvim' },
     config = function()
       require('textcase').setup {}
-      require('telescope').load_extension 'textcase'
     end,
     keys = {
       'ga', -- Default invocation prefix
-      { 'ga.', '<cmd>TextCaseOpenTelescope<CR>', mode = { 'n', 'x' }, desc = 'Telescope' },
     },
     cmd = {
       -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
       'Subs',
-      'TextCaseOpenTelescope',
-      'TextCaseOpenTelescopeQuickChange',
-      'TextCaseOpenTelescopeLSPChange',
       'TextCaseStartReplacingCommand',
     },
     -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
