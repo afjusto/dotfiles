@@ -231,6 +231,17 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+function _G.get_oil_winbar()
+  local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
+  local dir = require('oil').get_current_dir(bufnr)
+  if dir then
+    return vim.fn.fnamemodify(dir, ':~')
+  else
+    -- If there is no current directory (e.g. over ssh), just show the buffer name
+    return vim.api.nvim_buf_get_name(0)
+  end
+end
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.uv.fs_stat(lazypath) then
@@ -300,10 +311,27 @@ require('lazy').setup({
         view_options = {
           show_hidden = true,
         },
+        win_options = {
+          winbar = '%!v:lua.get_oil_winbar()',
+          signcolumn = 'yes:2',
+        },
+        keymaps = {
+          ['<C-s>'] = false,
+          ['<C-h>'] = false,
+          ['<C-t>'] = false,
+          ['<C-l>'] = false,
+          ['<C-r>'] = 'actions.refresh',
+        },
       }
       vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
       vim.keymap.set('n', '<space>-', require('oil').toggle_float, { desc = 'Open parent directory in floating window' })
     end,
+  },
+
+  {
+    'refractalize/oil-git-status.nvim',
+    dependencies = { 'stevearc/oil.nvim' },
+    config = true,
   },
 
   {
