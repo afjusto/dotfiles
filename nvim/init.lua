@@ -97,6 +97,12 @@ vim.keymap.set('n', '<leader>ws', '<C-w>v', { desc = 'Split window horizontally'
 vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Split window vertically' })
 vim.keymap.set('n', '<leader>we', '<C-w>=', { desc = 'Make split windows equally' })
 vim.keymap.set('n', '<leader>wq', ':close<CR>', { desc = 'Close split window' })
+-- add keymap to make split bigger
+vim.keymap.set('n', '<leader>w>', '<C-w>>', { desc = 'Make split window bigger' })
+vim.keymap.set('n', '<leader>w<', '<C-w><', { desc = 'Make split window smaller' })
+vim.keymap.set('n', '<leader>w+', '<C-w>+', { desc = 'Make split window taller' })
+vim.keymap.set('n', '<leader>w-', '<C-w>-', { desc = 'Make split window shorter' })
+-- restore last closed window
 vim.keymap.set('n', '<leader>wr', function()
   local utils = require 'custom.utils'
   utils.reopen_last_closed_window()
@@ -563,6 +569,37 @@ require('lazy').setup({
     -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
     -- available after the first executing of it or after a keymap of text-case.nvim has been used.
     -- lazy = false,
+  },
+
+  {
+    'stevearc/quicker.nvim',
+    ft = 'qf',
+    ---@module "quicker"
+    ---@type quicker.SetupOptions
+    opts = {},
+    config = function()
+      require('quicker').setup {
+        max_filename_width = function()
+          return 40
+        end,
+        keys = {
+          {
+            '>',
+            function()
+              require('quicker').expand { before = 2, after = 2, add_to_existing = true }
+            end,
+            desc = 'Expand quickfix context',
+          },
+          {
+            '<',
+            function()
+              require('quicker').collapse()
+            end,
+            desc = 'Collapse quickfix context',
+          },
+        },
+      }
+    end,
   },
 
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
