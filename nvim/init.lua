@@ -87,29 +87,6 @@ vim.keymap.set('n', 'Q', '<nop>', { silent = true })
 vim.keymap.set({ 'n', 'v' }, 'L', '$', { desc = 'Go to end of line' })
 vim.keymap.set({ 'n', 'v' }, 'H', '^', { desc = 'Go to end of line' })
 
-vim.keymap.set('n', '<leader><leader>', function()
-  local utils = require 'custom.utils'
-  utils.swap_last_buffer()
-end, { noremap = true, silent = true, desc = 'Swap between buffers' })
-
--- split management
-vim.keymap.set('n', '<leader>ws', '<C-w>v', { desc = 'Split window horizontally' })
-vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Split window vertically' })
-vim.keymap.set('n', '<leader>we', '<C-w>=', { desc = 'Make split windows equally' })
-vim.keymap.set('n', '<leader>wq', ':close<CR>', { desc = 'Close split window' })
--- add keymap to make split bigger
-vim.keymap.set('n', '<leader>w>', '<C-w>>', { desc = 'Make split window bigger' })
-vim.keymap.set('n', '<leader>w<', '<C-w><', { desc = 'Make split window smaller' })
-vim.keymap.set('n', '<leader>w+', '<C-w>+', { desc = 'Make split window taller' })
-vim.keymap.set('n', '<leader>w-', '<C-w>-', { desc = 'Make split window shorter' })
--- restore last closed window
-vim.keymap.set('n', '<leader>wr', function()
-  local utils = require 'custom.utils'
-  utils.reopen_last_closed_window()
-end, { noremap = true, silent = true, desc = 'Restore last closed window' })
-
-vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
-
 -- commenting
 vim.keymap.set('n', 'gco', 'o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Below' })
 vim.keymap.set('n', 'gcO', 'O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 'Add Comment Above' })
@@ -117,21 +94,6 @@ vim.keymap.set('n', 'gcO', 'O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>', { desc = 
 -- better indenting
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
-
--- diagnostics
-local diagnostic_goto = function(next, severity)
-  local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
-  severity = severity and vim.diagnostic.severity[severity] or nil
-  return function()
-    go { severity = severity }
-  end
-end
-
-vim.keymap.set('n', '<leader>dl', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
-vim.keymap.set('n', ']e', diagnostic_goto(true, 'ERROR'), { desc = 'Next Error' })
-vim.keymap.set('n', '[e', diagnostic_goto(false, 'ERROR'), { desc = 'Prev Error' })
-vim.keymap.set('n', ']w', diagnostic_goto(true, 'WARN'), { desc = 'Next Warning' })
-vim.keymap.set('n', '[w', diagnostic_goto(false, 'WARN'), { desc = 'Prev Warning' })
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move line down' })
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move line up' })
@@ -141,112 +103,31 @@ vim.keymap.set('n', 'J', 'mzJ`z', { desc = 'Join lines' })
 vim.keymap.set('n', 'n', 'nzzzv', { desc = 'Center next search result' })
 vim.keymap.set('n', 'N', 'Nzzzv', { desc = 'Center previous search result' })
 vim.keymap.set({ 'v' }, '<leader>D', [["_d]], { desc = 'Delete to black hole register' })
-vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
-vim.keymap.set('n', '<leader>rw', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = 'Replace word under cursor' })
-
-vim.keymap.set('n', '<leader>o', 'o<ESC>', { desc = 'Insert new line below' })
-vim.keymap.set('n', '<leader>O', 'O<ESC>', { desc = 'Insert new line above' })
+vim.keymap.set('n', '<leader>rw', [[:%s/\<<C-r><C-w>\>/]], { desc = 'Replace word under cursor' })
 
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', 'yp', "<cmd>let @+ = expand('%:~:.')<cr>", { desc = 'Copy relative path' })
 vim.keymap.set('n', 'yP', "<cmd>let @+ = expand('%:p')<cr>", { desc = 'Copy absolute path' })
 
--- add keymap to toggle git blame
-vim.keymap.set('n', '<leader>ugb', '<cmd>GitBlameToggle<cr>', { desc = 'Toggle Git Blame' })
+vim.keymap.set({ 'i', 'x', 'n', 's' }, '<C-s>', '<cmd>w<cr><esc>', { desc = 'Save File' })
 
 -- [[ Autocommands ]]
+local yank_group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true })
+
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+  group = yank_group,
   callback = function()
-    vim.highlight.on_yank()
+    vim.highlight.on_yank {
+      higroup = 'Yank', -- custom highlight group
+      timeout = 200, -- duration in ms
+      on_visual = true, -- highlight visual selections too
+    }
   end,
 })
 
--- go to last loc when opening a buffer
-vim.api.nvim_create_autocmd('BufReadPost', {
-  group = vim.api.nvim_create_augroup('kickstart-last-loc', { clear = true }),
-  callback = function(event)
-    local exclude = { 'gitcommit' }
-    local buf = event.buf
-    if vim.tbl_contains(exclude, vim.bo[buf].filetype) or vim.b[buf].lazyvim_last_loc then
-      return
-    end
-    vim.b[buf].lazyvim_last_loc = true
-    local mark = vim.api.nvim_buf_get_mark(buf, '"')
-    local lcount = vim.api.nvim_buf_line_count(buf)
-    if mark[1] > 0 and mark[1] <= lcount then
-      pcall(vim.api.nvim_win_set_cursor, 0, mark)
-    end
-  end,
-})
-
---save the last closed window info
-vim.api.nvim_create_autocmd('WinClosed', {
-  callback = function()
-    local utils = require 'custom.utils'
-    utils.save_last_closed_window()
-  end,
-})
-
--- close some filetypes with <q>
-vim.api.nvim_create_autocmd('FileType', {
-  group = vim.api.nvim_create_augroup('kickstart-close-with-q', { clear = true }),
-  pattern = {
-    'PlenaryTestPopup',
-    'grug-far',
-    'help',
-    'lspinfo',
-    'qf',
-    'spectre_panel',
-    'startuptime',
-    'tsplayground',
-    'checkhealth',
-    'neotest-output',
-    'neotest-summary',
-    'neotest-output-panel',
-    'dbout',
-    'gitsigns.blame',
-    'oil',
-  },
-  callback = function(event)
-    vim.bo[event.buf].buflisted = false
-    vim.keymap.set('n', 'q', '<cmd>close<cr>', {
-      buffer = event.buf,
-      silent = true,
-      desc = 'Quit buffer',
-    })
-  end,
-})
-
--- Shift numbered registers up (1 becomes 2, etc.)
-local function yank_shift()
-  for i = 9, 1, -1 do
-    vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i - 1)))
-  end
-end
-
--- Create autocmd for TextYankPost event
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    local event = vim.v.event
-    if event.operator == 'y' then
-      yank_shift()
-    end
-  end,
-})
-
-function _G.get_oil_winbar()
-  local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
-  local dir = require('oil').get_current_dir(bufnr)
-  if dir then
-    return vim.fn.fnamemodify(dir, ':~')
-  else
-    -- If there is no current directory (e.g. over ssh), just show the buffer name
-    return vim.api.nvim_buf_get_name(0)
-  end
-end
+vim.cmd 'highlight Yank guibg=#ffa600 guifg=#000000'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -259,376 +140,634 @@ if not vim.uv.fs_stat(lazypath) then
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  'nvim-lua/plenary.nvim',
-  'nvim-tree/nvim-web-devicons',
-  'tpope/vim-sleuth',
-  'tpope/vim-surround',
-  'tpope/vim-fugitive',
-  'christoomey/vim-tmux-navigator',
+if vim.g.vscode then
+  vim.keymap.set({ 'n', 'v', 'i' }, '<C-k>', '<Nop>', { silent = true })
+  vim.keymap.set({ 'n', 'v', 'i' }, '<C-j>', '<Nop>', { silent = true })
 
-  {
-    'RRethy/nvim-treesitter-endwise',
-    config = function()
-      require('nvim-treesitter.configs').setup {
-        endwise = {
-          enable = true,
-        },
-      }
-    end,
-  },
+  local keymap = vim.keymap.set
 
-  { 'akinsho/git-conflict.nvim', version = '*', config = true },
+  keymap({ 'n' }, '<leader>ws', "<cmd>lua require('vscode').action('workbench.action.splitEditorRight')<CR>")
+  keymap({ 'n' }, '<leader>wh', "<cmd>lua require('vscode').action('workbench.action.splitEditorDown')<CR>")
+  keymap({ 'n' }, '<leader>we', "<cmd>lua require('vscode').action('workbench.action.evenEditorWidths')<CR>")
+  keymap({ 'n' }, '<leader>wq', "<cmd>lua require('vscode').action('workbench.action.closeActiveEditor')<CR>")
+  keymap({ 'n' }, '<leader>wm', "<cmd>lua require('vscode').action('workbench.action.toggleMaximizeEditorGroup')<CR>")
 
-  {
-    'folke/tokyonight.nvim',
-    priority = 1000,
-    init = function()
-      vim.cmd.colorscheme 'tokyonight-storm'
-      vim.cmd.hi 'Comment gui=none'
-    end,
-  },
+  keymap({ 'n' }, '<C-h>', "<cmd>lua require('vscode').action('workbench.action.focusLeftGroup')<CR>")
+  keymap({ 'n' }, '<C-j>', "<cmd>lua require('vscode').action('workbench.action.focusBelowGroup')<CR>")
+  keymap({ 'n' }, '<C-k>', "<cmd>lua require('vscode').action('workbench.action.focusAboveGroup')<CR>")
+  keymap({ 'n' }, '<C-l>', "<cmd>lua require('vscode').action('workbench.action.focusRightGroup')<CR>")
 
-  {
-    'folke/ts-comments.nvim',
-    event = 'VeryLazy',
-    opts = {},
-  },
+  keymap({ 'n' }, 'za', "<cmd>lua require('vscode').action('editor.toggleFold')<CR>")
 
-  {
-    'windwp/nvim-ts-autotag',
-    config = function()
-      require('nvim-ts-autotag').setup()
-    end,
-  },
+  keymap({ 'n', 'v' }, '<leader>ca', "<cmd>lua require('vscode').action('editor.action.quickFix')<CR>")
+  keymap({ 'n', 'v' }, '<leader>cu', "<cmd>lua require('vscode').action('typescript.removeUnusedImports')<CR>")
+  keymap({ 'n', 'v' }, '<leader>ff', "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>")
+  keymap({ 'n', 'v' }, '<leader>.', "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>")
+  keymap({ 'n', 'v' }, ']d', "<cmd>lua require('vscode').action('editor.action.marker.next')<CR>")
+  keymap({ 'n', 'v' }, ']e', "<cmd>lua require('vscode').action('editor.action.marker.next')<CR>")
+  keymap({ 'n', 'v' }, '[d', "<cmd>lua require('vscode').action('editor.action.marker.prev')<CR>")
+  keymap({ 'n', 'v' }, '[e', "<cmd>lua require('vscode').action('editor.action.marker.prev')<CR>")
+  keymap({ 'n' }, '<leader>rn', "<cmd>lua require('vscode').action('editor.action.rename')<CR>")
+  keymap({ 'n' }, '<leader>fs', "<cmd>lua require('vscode').action('workbench.action.findInFiles')<CR>")
 
-  {
-    'NvChad/nvim-colorizer.lua',
-    event = { 'BufReadPre', 'BufNewFile' },
-    config = true,
-  },
+  keymap({ 'n' }, 'gr', "<cmd>lua require('vscode').action('editor.action.goToReferences')<CR>")
 
-  {
-    'stevearc/oil.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    config = function()
-      require('oil').setup {
-        columns = { 'icon' },
-        view_options = {
-          show_hidden = true,
-        },
-        win_options = {
-          winbar = '%!v:lua.get_oil_winbar()',
-          signcolumn = 'yes:2',
-        },
-        keymaps = {
-          ['<C-s>'] = false,
-          ['<C-h>'] = false,
-          ['<C-t>'] = false,
-          ['<C-l>'] = false,
-          ['<C-r>'] = 'actions.refresh',
-        },
-      }
-      vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
-      vim.keymap.set('n', '<space>-', require('oil').toggle_float, { desc = 'Open parent directory in floating window' })
-    end,
-  },
+  keymap({ 'n' }, '<leader>ml', "<cmd>lua require('vscode').action('workbench.action.moveEditorToRightGroup')<CR>")
+  keymap({ 'n' }, '<leader>mh', "<cmd>lua require('vscode').action('workbench.action.moveEditorToLeftGroup')<CR>")
 
-  {
-    'refractalize/oil-git-status.nvim',
-    dependencies = { 'stevearc/oil.nvim' },
-    config = true,
-  },
+  keymap({ 'n' }, ']g', "<cmd>lua require('vscode').action('workbench.action.editor.nextChange')<CR>")
+  keymap({ 'n' }, '[g', "<cmd>lua require('vscode').action('workbench.action.editor.previousChange')<CR>")
 
-  {
-    'lukas-reineke/indent-blankline.nvim',
-    main = 'ibl',
-    opts = {
-      enabled = false,
+  keymap({ 'n' }, '<leader>gr', "<cmd>lua require('vscode').action('git.revertSelectedRanges')<CR>")
+  keymap({ 'n' }, '<leader>gp', "<cmd>lua require('vscode').action('editor.action.dirtydiff.next')<CR>")
+
+  -- harpoon keymaps
+  keymap({ 'n', 'v' }, '<leader>ha', "<cmd>lua require('vscode').action('cursor-harpoon.addEditor')<CR>")
+  keymap({ 'n', 'v' }, '<leader>hl', "<cmd>lua require('vscode').action('cursor-harpoon.editEditors')<CR>")
+  keymap({ 'n', 'v' }, '<leader>1', "<cmd>lua require('vscode').action('cursor-harpoon.gotoEditor1')<CR>")
+  keymap({ 'n', 'v' }, '<leader>2', "<cmd>lua require('vscode').action('cursor-harpoon.gotoEditor2')<CR>")
+  keymap({ 'n', 'v' }, '<leader>3', "<cmd>lua require('vscode').action('cursor-harpoon.gotoEditor3')<CR>")
+  keymap({ 'n', 'v' }, '<leader>4', "<cmd>lua require('vscode').action('cursor-harpoon.gotoEditor4')<CR>")
+
+  keymap({ 'n' }, '<leader>fo', "<cmd>lua require('vscode').action('workbench.action.gotoSymbol')<CR>")
+  keymap({ 'n' }, '<leader>fO', "<cmd>lua require('vscode').action('workbench.action.showAllSymbols')<CR>")
+
+  -- VSCode extension
+  require('lazy').setup {
+    'nvim-lua/plenary.nvim',
+
+    { -- Collection of varijjous small independent plugins/modules
+      'echasnovski/mini.nvim',
+      config = function()
+        -- Better Around/Inside textobjects
+        --
+        -- Examples:
+        --  - va)  - [V]isually select [A]round [)]paren
+        --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
+        --  - ci'  - [C]hange [I]nside [']quote
+        local utils = require 'custom.utils'
+        require('mini.ai').setup { n_lines = 500, custom_textobjects = {
+          i = utils.ai_indent,
+        } }
+
+        -- Add/delete/replace surroundings (brackets, quotes, etc.)
+        --
+        -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+        -- - sd'   - [S]urround [D]elete [']quotes
+        -- - sr)'  - [S]urround [R]eplace [)] [']
+        -- require('mini.surround').setup()
+
+        -- Simple and easy statusline.
+        --  You could remove this setup call if you don't like it,
+        --  and try some other statusline plugin
+        -- local statusline = require 'mini.statusline'
+        -- set use_icons to true if you have a Nerd Font
+        -- statusline.setup { use_icons = vim.g.have_nerd_font }
+
+        -- You can configure sections in the statusline by overriding their
+        -- default behavior. For example, here we set the section for
+        -- cursor location to LINE:COLUMN
+        ---@diagnostic disable-next-line: duplicate-set-field
+        -- statusline.section_location = function()
+        --   return '%2l:%-2v'
+        -- end
+
+        -- ... and there is more!
+        --  Check out: https://github.com/echasnovski/mini.nvim
+      end,
     },
-    config = function()
-      vim.keymap.set('n', '<leader>ui', '<cmd>IBLToggle<CR>', { desc = 'Toggle indent lines' })
-    end,
-  },
 
-  {
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      -- current_line_blame = true,
-    },
-  },
-
-  {
-    'folke/which-key.nvim',
-    event = 'VimEnter',
-    config = function()
-      require('which-key').setup()
-
-      require('which-key').add {
-        { '<leader>c', group = 'Code' },
-        { '<leader>d', group = 'Diagnostics' },
-        { '<leader>e', group = 'File explorer' },
-        { '<leader>f', group = 'Find' },
-        { '<leader>g', group = 'Git' },
-        { '<leader>h', group = 'Harpoon' },
-        { '<leader>r', group = 'Rename' },
-        { '<leader>t', group = 'Testing' },
-        { '<leader>u', group = 'UI' },
-        { '<leader>w', group = 'Windows' },
-        {
-          '<leader>?',
-          function()
-            require('which-key').show { global = false }
-          end,
-          desc = 'Buffer Keymaps (which-key)',
-        },
-        { '<BS>', desc = 'Decrement Selection', mode = 'x' },
-        { '<C-space>', desc = 'Increment Selection', mode = { 'x', 'n' } },
-      }
-    end,
-  },
-
-  {
-    'szw/vim-maximizer',
-    keys = {
-      { '<leader>wm', '<cmd>MaximizerToggle<CR>', desc = 'Maximize/minimize a window' },
-    },
-  },
-
-  {
-    'f-person/git-blame.nvim',
-    event = 'VeryLazy',
-    config = function()
-      require('gitblame').setup { enabled = false }
-      vim.keymap.set('n', '<Leader>go', ':GitBlameOpenCommitURL<CR>', { noremap = true, silent = true, desc = 'Open commit URL' })
-    end,
-  },
-
-  {
-    'scottmckendry/cyberdream.nvim',
-    -- lazy = false,
-    priority = 1000,
-    config = function()
-      require('cyberdream').setup {
-        transparent = true,
-      }
-    end,
-  },
-
-  {
-    'folke/trouble.nvim',
-    opts = {},
-  },
-
-  {
-    'ThePrimeagen/harpoon',
-    branch = 'harpoon2',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    config = function()
-      local harpoon = require 'harpoon'
-      harpoon.setup {}
-
-      vim.keymap.set('n', '<leader>ha', function()
-        harpoon:list():add()
-      end, { desc = 'Add current file to Harpoon' })
-      vim.keymap.set('n', '<leader>hl', function()
-        harpoon.ui:toggle_quick_menu(harpoon:list())
-      end, { desc = 'Open Harpoon list' })
-
-      vim.keymap.set('n', '<leader>1', function()
-        harpoon:list():select(1)
-      end, { desc = 'Select Harpoon list 1' })
-      vim.keymap.set('n', '<leader>2', function()
-        harpoon:list():select(2)
-      end, { desc = 'Select Harpoon list 2' })
-      vim.keymap.set('n', '<leader>3', function()
-        harpoon:list():select(3)
-      end, { desc = 'Select Harpoon list 3' })
-      vim.keymap.set('n', '<leader>4', function()
-        harpoon:list():select(4)
-      end, { desc = 'Select Harpoon list 4' })
-    end,
-  },
-
-  {
-    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-    -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
-    ft = 'lua',
-    opts = {
-      library = {
-        -- Load luvit types when the `vim.uv` word is found
-        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+    {
+      'mistricky/codesnap.nvim',
+      build = 'make',
+      opts = {
+        mac_window_bar = false,
+        save_path = '~/Desktop/',
+        has_breadcrumbs = true,
+        has_line_number = true,
+        bg_padding = 0,
+        watermark = '',
       },
     },
-  },
-  { 'Bilal2453/luvit-meta', lazy = true },
 
-  {
-    'utilyre/sentiment.nvim',
-    version = '*',
-    event = 'VeryLazy', -- keep for lazy loading
-    opts = {
-      -- config
+    {
+      'johmsalas/text-case.nvim',
+      config = function()
+        require('textcase').setup {}
+      end,
+      keys = {
+        'ga', -- Default invocation prefix
+      },
+      cmd = {
+        -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
+        'Subs',
+        'TextCaseStartReplacingCommand',
+      },
+      -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
+      -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
+      -- available after the first executing of it or after a keymap of text-case.nvim has been used.
+      -- lazy = false,
     },
-    init = function()
-      -- `matchparen.vim` needs to be disabled manually in case of lazy loading
-      vim.g.loaded_matchparen = 1
-    end,
-  },
 
-  { -- Collection of varijjous small independent plugins/modules
-    'echasnovski/mini.nvim',
-    config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-      --  - ci'  - [C]hange [I]nside [']quote
+    { import = 'custom.vscode-plugins' },
+  }
+else
+  vim.keymap.set('n', '<leader><leader>', function()
+    local utils = require 'custom.utils'
+    utils.swap_last_buffer()
+  end, { noremap = true, silent = true, desc = 'Swap between buffers' })
+
+  -- split management
+  vim.keymap.set('n', '<leader>ws', '<C-w>v', { desc = 'Split window horizontally' })
+  vim.keymap.set('n', '<leader>wh', '<C-w>s', { desc = 'Split window vertically' })
+  vim.keymap.set('n', '<leader>we', '<C-w>=', { desc = 'Make split windows equally' })
+  vim.keymap.set('n', '<leader>wq', ':close<CR>', { desc = 'Close split window' })
+  -- add keymap to make split bigger
+  vim.keymap.set('n', '<leader>w>', '<C-w>>', { desc = 'Make split window bigger' })
+  vim.keymap.set('n', '<leader>w<', '<C-w><', { desc = 'Make split window smaller' })
+  vim.keymap.set('n', '<leader>w+', '<C-w>+', { desc = 'Make split window taller' })
+  vim.keymap.set('n', '<leader>w-', '<C-w>-', { desc = 'Make split window shorter' })
+  -- restore last closed window
+  vim.keymap.set('n', '<leader>wr', function()
+    local utils = require 'custom.utils'
+    utils.reopen_last_closed_window()
+  end, { noremap = true, silent = true, desc = 'Restore last closed window' })
+
+  -- diagnostics
+  local diagnostic_goto = function(next, severity)
+    local go = next and vim.diagnostic.goto_next or vim.diagnostic.goto_prev
+    severity = severity and vim.diagnostic.severity[severity] or nil
+    return function()
+      go { severity = severity }
+    end
+  end
+
+  vim.keymap.set('n', '<leader>dl', vim.diagnostic.open_float, { desc = 'Line Diagnostics' })
+  vim.keymap.set('n', ']e', diagnostic_goto(true, 'ERROR'), { desc = 'Next Error' })
+  vim.keymap.set('n', '[e', diagnostic_goto(false, 'ERROR'), { desc = 'Prev Error' })
+  vim.keymap.set('n', ']w', diagnostic_goto(true, 'WARN'), { desc = 'Next Warning' })
+  vim.keymap.set('n', '[w', diagnostic_goto(false, 'WARN'), { desc = 'Prev Warning' })
+
+  -- add keymap to toggle git blame
+  vim.keymap.set('n', '<leader>ugb', '<cmd>GitBlameToggle<cr>', { desc = 'Toggle Git Blame' })
+
+  vim.keymap.set('n', '<C-f>', '<cmd>silent !tmux neww tmux-sessionizer<CR>')
+
+  -- go to last loc when opening a buffer
+  vim.api.nvim_create_autocmd('BufReadPost', {
+    group = vim.api.nvim_create_augroup('kickstart-last-loc', { clear = true }),
+    callback = function(event)
+      local exclude = { 'gitcommit' }
+      local buf = event.buf
+      if vim.tbl_contains(exclude, vim.bo[buf].filetype) or vim.b[buf].lazyvim_last_loc then
+        return
+      end
+      vim.b[buf].lazyvim_last_loc = true
+      local mark = vim.api.nvim_buf_get_mark(buf, '"')
+      local lcount = vim.api.nvim_buf_line_count(buf)
+      if mark[1] > 0 and mark[1] <= lcount then
+        pcall(vim.api.nvim_win_set_cursor, 0, mark)
+      end
+    end,
+  })
+
+  --save the last closed window info
+  vim.api.nvim_create_autocmd('WinClosed', {
+    callback = function()
       local utils = require 'custom.utils'
-      require('mini.ai').setup { n_lines = 500, custom_textobjects = {
-        i = utils.ai_indent,
-      } }
-
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      -- require('mini.surround').setup()
-
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      -- local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      -- statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      -- statusline.section_location = function()
-      --   return '%2l:%-2v'
-      -- end
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
+      utils.save_last_closed_window()
     end,
-  },
+  })
 
-  {
-    'mistricky/codesnap.nvim',
-    build = 'make',
-    opts = {
-      mac_window_bar = false,
-      save_path = '~/Desktop/',
-      has_breadcrumbs = true,
-      has_line_number = true,
-      bg_padding = 0,
-      watermark = '',
+  -- close some filetypes with <q>
+  vim.api.nvim_create_autocmd('FileType', {
+    group = vim.api.nvim_create_augroup('kickstart-close-with-q', { clear = true }),
+    pattern = {
+      'PlenaryTestPopup',
+      'grug-far',
+      'help',
+      'lspinfo',
+      'qf',
+      'spectre_panel',
+      'startuptime',
+      'tsplayground',
+      'checkhealth',
+      'neotest-output',
+      'neotest-summary',
+      'neotest-output-panel',
+      'dbout',
+      'gitsigns.blame',
+      'oil',
     },
-  },
-
-  {
-    'utilyre/barbecue.nvim',
-    name = 'barbecue',
-    version = '*',
-    dependencies = {
-      'SmiteshP/nvim-navic',
-      'nvim-tree/nvim-web-devicons', -- optional dependency
-    },
-    lazy = true,
-    opts = {
-      -- configurations go here
-    },
-  },
-
-  {
-    'johmsalas/text-case.nvim',
-    config = function()
-      require('textcase').setup {}
+    callback = function(event)
+      vim.bo[event.buf].buflisted = false
+      vim.keymap.set('n', 'q', '<cmd>close<cr>', {
+        buffer = event.buf,
+        silent = true,
+        desc = 'Quit buffer',
+      })
     end,
-    keys = {
-      'ga', -- Default invocation prefix
-    },
-    cmd = {
-      -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
-      'Subs',
-      'TextCaseStartReplacingCommand',
-    },
-    -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
-    -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
-    -- available after the first executing of it or after a keymap of text-case.nvim has been used.
-    -- lazy = false,
-  },
+  })
 
-  {
-    'stevearc/quicker.nvim',
-    ft = 'qf',
-    ---@module "quicker"
-    ---@type quicker.SetupOptions
-    opts = {},
-    config = function()
-      require('quicker').setup {
-        max_filename_width = function()
-          return 40
-        end,
-        keys = {
-          {
-            '>',
-            function()
-              require('quicker').expand { before = 2, after = 2, add_to_existing = true }
-            end,
-            desc = 'Expand quickfix context',
+  -- Shift numbered registers up (1 becomes 2, etc.)
+  local function yank_shift()
+    for i = 9, 1, -1 do
+      vim.fn.setreg(tostring(i), vim.fn.getreg(tostring(i - 1)))
+    end
+  end
+
+  -- Create autocmd for TextYankPost event
+  vim.api.nvim_create_autocmd('TextYankPost', {
+    callback = function()
+      local event = vim.v.event
+      if event.operator == 'y' then
+        yank_shift()
+      end
+    end,
+  })
+
+  function _G.get_oil_winbar()
+    local bufnr = vim.api.nvim_win_get_buf(vim.g.statusline_winid)
+    local dir = require('oil').get_current_dir(bufnr)
+    if dir then
+      return vim.fn.fnamemodify(dir, ':~')
+    else
+      -- If there is no current directory (e.g. over ssh), just show the buffer name
+      return vim.api.nvim_buf_get_name(0)
+    end
+  end
+
+  require('lazy').setup({
+    'nvim-lua/plenary.nvim',
+    'nvim-tree/nvim-web-devicons',
+    'tpope/vim-sleuth',
+    'tpope/vim-surround',
+    'tpope/vim-fugitive',
+    'christoomey/vim-tmux-navigator',
+
+    {
+      'RRethy/nvim-treesitter-endwise',
+      config = function()
+        require('nvim-treesitter.configs').setup {
+          endwise = {
+            enable = true,
           },
-          {
-            '<',
-            function()
-              require('quicker').collapse()
-            end,
-            desc = 'Collapse quickfix context',
+        }
+      end,
+    },
+
+    { 'akinsho/git-conflict.nvim', version = '*', config = true },
+
+    {
+      'folke/tokyonight.nvim',
+      priority = 1000,
+      init = function()
+        vim.cmd.colorscheme 'tokyonight-storm'
+        vim.cmd.hi 'Comment gui=none'
+      end,
+    },
+
+    {
+      'folke/ts-comments.nvim',
+      event = 'VeryLazy',
+      opts = {},
+    },
+
+    {
+      'windwp/nvim-ts-autotag',
+      config = function()
+        require('nvim-ts-autotag').setup()
+      end,
+    },
+
+    {
+      'NvChad/nvim-colorizer.lua',
+      event = { 'BufReadPre', 'BufNewFile' },
+      config = true,
+    },
+
+    {
+      'stevearc/oil.nvim',
+      dependencies = { 'nvim-tree/nvim-web-devicons' },
+      config = function()
+        require('oil').setup {
+          columns = { 'icon' },
+          view_options = {
+            show_hidden = true,
           },
+          win_options = {
+            winbar = '%!v:lua.get_oil_winbar()',
+            signcolumn = 'yes:2',
+          },
+          keymaps = {
+            ['<C-s>'] = false,
+            ['<C-h>'] = false,
+            ['<C-t>'] = false,
+            ['<C-l>'] = false,
+            ['<C-r>'] = 'actions.refresh',
+          },
+        }
+        vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+        vim.keymap.set('n', '<space>-', require('oil').toggle_float, { desc = 'Open parent directory in floating window' })
+      end,
+    },
+
+    {
+      'refractalize/oil-git-status.nvim',
+      dependencies = { 'stevearc/oil.nvim' },
+      config = true,
+    },
+
+    {
+      'lukas-reineke/indent-blankline.nvim',
+      main = 'ibl',
+      opts = {
+        enabled = false,
+      },
+      config = function()
+        vim.keymap.set('n', '<leader>ui', '<cmd>IBLToggle<CR>', { desc = 'Toggle indent lines' })
+      end,
+    },
+
+    {
+      'lewis6991/gitsigns.nvim',
+      opts = {
+        signs = {
+          add = { text = '+' },
+          change = { text = '~' },
+          delete = { text = '_' },
+          topdelete = { text = '‾' },
+          changedelete = { text = '~' },
         },
-      }
-    end,
-  },
-
-  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
-  --
-  require 'kickstart.plugins.autopairs',
-  require 'kickstart.plugins.gitsigns',
-
-  { import = 'custom.plugins' },
-}, {
-  ui = {
-    -- If you are using a Nerd Font: set icons to an empty table which will use the
-    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    icons = vim.g.have_nerd_font and {} or {
-      cmd = '⌘',
-      config = '🛠',
-      event = '📅',
-      ft = '📂',
-      init = '⚙',
-      keys = '🗝',
-      plugin = '🔌',
-      runtime = '💻',
-      require = '🌙',
-      source = '📄',
-      start = '🚀',
-      task = '📌',
-      lazy = '💤 ',
+        -- current_line_blame = true,
+      },
     },
-  },
-})
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+    {
+      'folke/which-key.nvim',
+      event = 'VimEnter',
+      config = function()
+        require('which-key').setup()
+
+        require('which-key').add {
+          { '<leader>c', group = 'Code' },
+          { '<leader>d', group = 'Diagnostics' },
+          { '<leader>e', group = 'File explorer' },
+          { '<leader>f', group = 'Find' },
+          { '<leader>g', group = 'Git' },
+          { '<leader>h', group = 'Harpoon' },
+          { '<leader>r', group = 'Rename' },
+          { '<leader>t', group = 'Testing' },
+          { '<leader>u', group = 'UI' },
+          { '<leader>w', group = 'Windows' },
+          {
+            '<leader>?',
+            function()
+              require('which-key').show { global = false }
+            end,
+            desc = 'Buffer Keymaps (which-key)',
+          },
+          { '<BS>', desc = 'Decrement Selection', mode = 'x' },
+          { '<C-space>', desc = 'Increment Selection', mode = { 'x', 'n' } },
+        }
+      end,
+    },
+
+    {
+      'szw/vim-maximizer',
+      keys = {
+        { '<leader>wm', '<cmd>MaximizerToggle<CR>', desc = 'Maximize/minimize a window' },
+      },
+    },
+
+    {
+      'f-person/git-blame.nvim',
+      event = 'VeryLazy',
+      config = function()
+        require('gitblame').setup { enabled = false }
+        vim.keymap.set('n', '<Leader>go', ':GitBlameOpenCommitURL<CR>', { noremap = true, silent = true, desc = 'Open commit URL' })
+      end,
+    },
+
+    {
+      'scottmckendry/cyberdream.nvim',
+      -- lazy = false,
+      priority = 1000,
+      config = function()
+        require('cyberdream').setup {
+          transparent = true,
+        }
+      end,
+    },
+
+    {
+      'folke/trouble.nvim',
+      opts = {},
+    },
+
+    {
+      'ThePrimeagen/harpoon',
+      branch = 'harpoon2',
+      dependencies = { 'nvim-lua/plenary.nvim' },
+      config = function()
+        local harpoon = require 'harpoon'
+        harpoon.setup {}
+
+        vim.keymap.set('n', '<leader>ha', function()
+          harpoon:list():add()
+        end, { desc = 'Add current file to Harpoon' })
+        vim.keymap.set('n', '<leader>hl', function()
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end, { desc = 'Open Harpoon list' })
+
+        vim.keymap.set('n', '<leader>1', function()
+          harpoon:list():select(1)
+        end, { desc = 'Select Harpoon list 1' })
+        vim.keymap.set('n', '<leader>2', function()
+          harpoon:list():select(2)
+        end, { desc = 'Select Harpoon list 2' })
+        vim.keymap.set('n', '<leader>3', function()
+          harpoon:list():select(3)
+        end, { desc = 'Select Harpoon list 3' })
+        vim.keymap.set('n', '<leader>4', function()
+          harpoon:list():select(4)
+        end, { desc = 'Select Harpoon list 4' })
+      end,
+    },
+
+    {
+      -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+      -- used for completion, annotations and signatures of Neovim apis
+      'folke/lazydev.nvim',
+      ft = 'lua',
+      opts = {
+        library = {
+          -- Load luvit types when the `vim.uv` word is found
+          { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+        },
+      },
+    },
+    { 'Bilal2453/luvit-meta', lazy = true },
+
+    {
+      'utilyre/sentiment.nvim',
+      version = '*',
+      event = 'VeryLazy', -- keep for lazy loading
+      opts = {
+        -- config
+      },
+      init = function()
+        -- `matchparen.vim` needs to be disabled manually in case of lazy loading
+        vim.g.loaded_matchparen = 1
+      end,
+    },
+
+    { -- Collection of varijjous small independent plugins/modules
+      'echasnovski/mini.nvim',
+      config = function()
+        -- Better Around/Inside textobjects
+        --
+        -- Examples:
+        --  - va)  - [V]isually select [A]round [)]paren
+        --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
+        --  - ci'  - [C]hange [I]nside [']quote
+        local utils = require 'custom.utils'
+        require('mini.ai').setup { n_lines = 500, custom_textobjects = {
+          i = utils.ai_indent,
+        } }
+
+        -- Add/delete/replace surroundings (brackets, quotes, etc.)
+        --
+        -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+        -- - sd'   - [S]urround [D]elete [']quotes
+        -- - sr)'  - [S]urround [R]eplace [)] [']
+        -- require('mini.surround').setup()
+
+        -- Simple and easy statusline.
+        --  You could remove this setup call if you don't like it,
+        --  and try some other statusline plugin
+        -- local statusline = require 'mini.statusline'
+        -- set use_icons to true if you have a Nerd Font
+        -- statusline.setup { use_icons = vim.g.have_nerd_font }
+
+        -- You can configure sections in the statusline by overriding their
+        -- default behavior. For example, here we set the section for
+        -- cursor location to LINE:COLUMN
+        ---@diagnostic disable-next-line: duplicate-set-field
+        -- statusline.section_location = function()
+        --   return '%2l:%-2v'
+        -- end
+
+        -- ... and there is more!
+        --  Check out: https://github.com/echasnovski/mini.nvim
+      end,
+    },
+
+    {
+      'mistricky/codesnap.nvim',
+      build = 'make',
+      opts = {
+        mac_window_bar = false,
+        save_path = '~/Desktop/',
+        has_breadcrumbs = true,
+        has_line_number = true,
+        bg_padding = 0,
+        watermark = '',
+      },
+    },
+
+    {
+      'utilyre/barbecue.nvim',
+      name = 'barbecue',
+      version = '*',
+      dependencies = {
+        'SmiteshP/nvim-navic',
+        'nvim-tree/nvim-web-devicons', -- optional dependency
+      },
+      lazy = true,
+      opts = {
+        -- configurations go here
+      },
+    },
+
+    {
+      'johmsalas/text-case.nvim',
+      config = function()
+        require('textcase').setup {}
+      end,
+      keys = {
+        'ga', -- Default invocation prefix
+      },
+      cmd = {
+        -- NOTE: The Subs command name can be customized via the option "substitude_command_name"
+        'Subs',
+        'TextCaseStartReplacingCommand',
+      },
+      -- If you want to use the interactive feature of the `Subs` command right away, text-case.nvim
+      -- has to be loaded on startup. Otherwise, the interactive feature of the `Subs` will only be
+      -- available after the first executing of it or after a keymap of text-case.nvim has been used.
+      -- lazy = false,
+    },
+
+    {
+      'stevearc/quicker.nvim',
+      ft = 'qf',
+      ---@module "quicker"
+      ---@type quicker.SetupOptions
+      opts = {},
+      config = function()
+        require('quicker').setup {
+          max_filename_width = function()
+            return 40
+          end,
+          keys = {
+            {
+              '>',
+              function()
+                require('quicker').expand { before = 2, after = 2, add_to_existing = true }
+              end,
+              desc = 'Expand quickfix context',
+            },
+            {
+              '<',
+              function()
+                require('quicker').collapse()
+              end,
+              desc = 'Collapse quickfix context',
+            },
+          },
+        }
+      end,
+    },
+
+    --  Uncomment any of the lines below to enable them (you will need to restart nvim).
+    --
+    require 'kickstart.plugins.autopairs',
+    require 'kickstart.plugins.gitsigns',
+
+    { import = 'custom.plugins' },
+  }, {
+    ui = {
+      -- If you are using a Nerd Font: set icons to an empty table which will use the
+      -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+      icons = vim.g.have_nerd_font and {} or {
+        cmd = '⌘',
+        config = '🛠',
+        event = '📅',
+        ft = '📂',
+        init = '⚙',
+        keys = '🗝',
+        plugin = '🔌',
+        runtime = '💻',
+        require = '🌙',
+        source = '📄',
+        start = '🚀',
+        task = '📌',
+        lazy = '💤 ',
+      },
+    },
+  })
+
+  -- The line beneath this is called `modeline`. See `:help modeline`
+  -- vim: ts=2 sts=2 sw=2 et
+end
