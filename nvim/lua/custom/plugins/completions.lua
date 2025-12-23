@@ -41,7 +41,7 @@ return {
   },
   opts = {
     performance = {
-      debounce = 60,
+      debounce = 15,
       throttle = 30,
       fetching_timeout = 500,
     },
@@ -108,7 +108,13 @@ return {
           -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
           group_index = 0,
         },
-        { name = 'nvim_lsp', keyword_length = 0 },
+        {
+          name = 'nvim_lsp',
+          keyword_length = 0,
+          entry_filter = function(entry)
+            return require('cmp').lsp.CompletionItemKind.Snippet ~= entry:get_kind()
+          end,
+        },
         { name = 'css_vars' },
         { name = 'luasnip' },
         { name = 'buffer' },
