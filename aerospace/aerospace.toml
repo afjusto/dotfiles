@@ -124,11 +124,12 @@ alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-b = 'workspace B' # browser
-alt-c = 'workspace C' # terminal + code
+alt-c = 'workspace C' # code
 alt-f = 'workspace F' # figma
 alt-g = 'workspace G' # chatgpt
 alt-s = 'workspace S' # slack
-alt-t = 'workspace T' # Linear
+alt-t = 'workspace T' # terminal
+alt-r = 'workspace R' # Linear
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
 alt-shift-1 = 'move-node-to-workspace 1'
@@ -155,7 +156,6 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
-alt-shift-a = 'mode apps'
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -164,17 +164,6 @@ esc = ['reload-config', 'mode main']
 r = ['flatten-workspace-tree', 'mode main'] # reset layout
 f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
 backspace = ['close-all-windows-but-current', 'mode main']
-
-[mode.apps.binding]
-esc = ['reload-config', 'mode main']
-b = ['exec-and-forget open -a /Applications/Google\ Chrome.app/', 'mode main']
-c = ['exec-and-forget open -a /Applications/WezTerm.app/', 'mode main']
-f = ['exec-and-forget open -a /Applications/Figma.app/', 'mode main']
-g = ['exec-and-forget open -a /Applications/ChatGPT.app/', 'mode main']
-s = ['exec-and-forget open -a /Applications/Slack.app/', 'mode main']
-t = ['exec-and-forget open -a /Applications/Linear.app/', 'mode main']
-q = ['exec-and-forget open -a /System/Applications/QuickTime\ Player.app', 'mode main']
-alt-s = ['exec-and-forget open -a /Applications/Spotify.app/', 'mode main']
 
 # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
 #s = ['layout sticky tiling', 'mode main']
@@ -186,6 +175,10 @@ alt-shift-l = ['join-with right', 'mode main']
 
 [[on-window-detected]]
 if.app-id = 'com.github.wez.wezterm'
+run = "move-node-to-workspace T"
+
+[[on-window-detected]]
+if.app-id = 'com.todesktop.230313mzl4w4u92'
 run = "move-node-to-workspace C"
 
 [[on-window-detected]]
@@ -198,7 +191,7 @@ run = "move-node-to-workspace B"
 
 [[on-window-detected]]
 if.app-id = 'com.linear'
-run = "move-node-to-workspace T"
+run = "move-node-to-workspace R"
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
