@@ -9,6 +9,7 @@ config.set_environment_variables = {
 config.color_scheme = "Tokyo Night Storm"
 
 config.font = wezterm.font("FiraCode Nerd Font Mono", { weight = "Medium" })
+config.font = wezterm.font("JetBrainsMono Nerd Font Mono", { weight = "Medium" })
 config.font_size = 13.0
 
 config.enable_tab_bar = false
@@ -44,6 +45,7 @@ config.keys = {
 		}),
 	},
 	{ key = "S", mods = "CTRL|SHIFT", action = wezterm.action.QuickSelect },
+	{ key = "Enter", mods = "SHIFT", action = wezterm.action.SendString("\x1b[13;2u") },
 }
 
 config.mouse_bindings = {
