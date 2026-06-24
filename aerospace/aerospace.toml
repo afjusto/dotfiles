@@ -126,7 +126,7 @@ alt-9 = 'workspace 9'
 alt-b = 'workspace B' # browser
 alt-c = 'workspace C' # code
 alt-f = 'workspace F' # figma
-alt-g = 'workspace G' # chatgpt
+alt-g = 'workspace G' # agent
 alt-s = 'workspace S' # slack
 alt-t = 'workspace T' # terminal
 alt-r = 'workspace R' # Linear
@@ -198,7 +198,7 @@ if.app-id = 'com.tinyspeck.slackmacgap'
 run = "move-node-to-workspace S"
 
 [[on-window-detected]]
-if.app-id = 'com.openai.chat'
+if.app-id = 'com.anthropic.claudefordesktop'
 run = "move-node-to-workspace G"
 
 [[on-window-detected]]
