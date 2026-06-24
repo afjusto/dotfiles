@@ -37,9 +37,9 @@ alias v="nvim"
 alias ls="eza --icons=always"
 alias gcb="git branch --show-current | pbcopy"
 
-# zoxide
-eval "$(zoxide init zsh)"
-alias cd="z"
+alias p="pnpm"
+alias wm='workmux'
+alias cc='claude'
 
 # starship
 eval "$(starship init zsh)"
@@ -48,3 +48,21 @@ eval "$(starship init zsh)"
 eval "$(/opt/homebrew/bin/mise activate zsh)"
 export NODE_OPTIONS="--max-old-space-size=8192"
 export HOME=$HOME
+export PATH="/opt/homebrew/opt/postgresql@18/bin:$PATH"
+
+# pnpm
+export PNPM_HOME="/Users/andre.justo/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
+
+eval "$(workmux completions zsh)"
+
+export PATH="$HOME/.local/bin:$PATH"
+
+export EDITOR='nvim'
+
+# zoxide
+eval "$(zoxide init --cmd cd zsh)"
