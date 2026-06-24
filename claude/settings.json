@@ -1,0 +1,36 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "workmux-status@workmux": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": false,
+  "effortLevel": "xhigh",
+  "fastMode": true,
+  "tui": "fullscreen",
+  "skipAutoPermissionPrompt": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash /Users/andre.justo/.claude/statusline-command.sh"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash /Users/andre.justo/.claude/hooks/pr-skills-reminder.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
