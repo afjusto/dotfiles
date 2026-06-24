@@ -27,3 +27,5 @@
   algorithm = histogram
 [branch]
   sort = -committerdate
+[rebase]
+	updateRefs = true
