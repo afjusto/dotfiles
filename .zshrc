@@ -66,3 +66,4 @@ export EDITOR='nvim'
 
 # zoxide
 eval "$(zoxide init --cmd cd zsh)"
+source <(fzf --zsh)
